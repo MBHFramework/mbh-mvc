@@ -1,0 +1,23 @@
+{
+    "name": "mbh-framework/mvc",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ulises Jeremias Cornejo Fandos",
+            "email": "ulisescf.24@gmail.com"
+        }
+    ],
+    "description": "Minimalist framework to create MVC Apps with php7.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MBHFramework/mbh-framework.git"
+    },
+    "autoload": {
+      "psr-4": {
+        "Mbh\\": "Mbh"
+      }
+    },
+    "require": {
+        "php": "^7.0"
+    }
+}
