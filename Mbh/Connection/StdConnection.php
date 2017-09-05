@@ -13,7 +13,7 @@ namespace Mbh\Connection;
 /**
  * created by Ulises Jeremias Cornejo Fandos
  */
-final class StdConnection extends \PDO
+class StdConnection extends \PDO
 {
     private static $id;
 
@@ -26,7 +26,7 @@ final class StdConnection extends \PDO
      *
      * @return connection instance
      */
-    final public static function start(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'], bool $new_instance = false)
+    public static function start(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'], bool $new_instance = false)
     {
         if (!self::$instance instanceof self or $new_instance) {
             self::$instance = new self($DATABASE, $MOTOR);
@@ -43,7 +43,7 @@ final class StdConnection extends \PDO
      *
      * @return void
      */
-    final public function __construct(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'])
+    public function __construct(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'])
     {
         try {
             switch ($MOTOR) {
@@ -119,7 +119,7 @@ final class StdConnection extends \PDO
         }
     }
 
-    final public function lastInsertId()
+    public function lastInsertId()
     {
         return parent::lastInsertId() ?? $this->id;
     }
@@ -132,7 +132,7 @@ final class StdConnection extends \PDO
      *
      * @return associative array
      */
-    final public function fetchArray(\PDOStatement $query): array
+    public function fetchArray(\PDOStatement $query): array
     {
         return $query->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -145,7 +145,7 @@ final class StdConnection extends \PDO
      *
      * @return number of rows found
      */
-    final public function rows(\PDOStatement $query): int
+    public function rows(\PDOStatement $query): int
     {
         return $query->rowCount();
     }
@@ -158,7 +158,7 @@ final class StdConnection extends \PDO
      *
      * @return int/float/string
      */
-    final public function escape($e)
+    public function escape($e)
     {
         if (!isset($e)) {
             return '';
@@ -181,7 +181,7 @@ final class StdConnection extends \PDO
      *
      * @return object \PDOStatement
      */
-    final public function query(string $q): \PDOStatement
+    public function query(string $q): \PDOStatement
     {
         try {
             if (DEBUG) {
@@ -208,7 +208,7 @@ final class StdConnection extends \PDO
      *
      * @return object \PDOStatement
      */
-    final public function delete(string $table, string $where, string $limit = 'LIMIT 1'): \PDOStatement
+    public function delete(string $table, string $where, string $limit = 'LIMIT 1'): \PDOStatement
     {
         return $this->query("DELETE FROM $table WHERE $where $limit;");
     }
@@ -222,7 +222,7 @@ final class StdConnection extends \PDO
      *
      * @return object \PDOStatement
      */
-    final public function insert(string $table, array $e): \PDOStatement
+    public function insert(string $table, array $e): \PDOStatement
     {
         if (sizeof($e) == 0) {
             trigger_error('array passed in $this->db->insert(...) is empty.', E_ERROR);
@@ -254,7 +254,7 @@ final class StdConnection extends \PDO
      *
      * @return object \PDOStatement
      */
-    final public function update(string $table, array $e, string $where, string $limit = ''): \PDOStatement
+    public function update(string $table, array $e, string $where, string $limit = ''): \PDOStatement
     {
         if (sizeof($e) == 0) {
             trigger_error('El arreglo pasado por $this->db->update(...) está vacío.', E_ERROR);
@@ -280,7 +280,7 @@ final class StdConnection extends \PDO
      *
      * @return False if you do not find any results, array associative / numeric if you get at least one
      */
-    final public function select(string $e, string $table, string $where = '1 = 1', string $limit = "")
+    public function select(string $e, string $table, string $where = '1 = 1', string $limit = "")
     {
         $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
         $result = $sql->fetchAll();
@@ -294,7 +294,7 @@ final class StdConnection extends \PDO
      *
      * @return void
      */
-    final public function __clone()
+    public function __clone()
     {
         trigger_error('Estás intentando clonar la Conexión', E_ERROR);
     }

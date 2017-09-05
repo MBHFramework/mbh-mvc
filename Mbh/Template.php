@@ -13,7 +13,7 @@ namespace Mbh;
 /**
  * created by Ulises Jeremias Cornejo Fandos
  */
-class Controller
+class Template
 {
     function __construct()
     {
