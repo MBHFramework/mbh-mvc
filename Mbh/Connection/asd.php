@@ -15,19 +15,21 @@ namespace Mbh\Connection;
  */
 class StdConnection extends \PDO
 {
+    private static $id;
+
     private static $instance;
 
     /**
      * Starts the connection instance, if it has already been declared before, does not duplicate it and saves memory.
      *
-     * @param array $database
+     * @param string $DATABASE, A database other than the one defined in DATABASE ['name'] is optionally passed to connect
      *
      * @return connection instance
      */
-    public static function start(array $database = [], bool $new_instance = false)
+    public static function start(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'], bool $new_instance = false)
     {
         if (!self::$instance instanceof self or $new_instance) {
-            self::$instance = new self($database);
+            self::$instance = new self($DATABASE, $MOTOR);
         }
 
         return self::$instance;
@@ -37,24 +39,91 @@ class StdConnection extends \PDO
     /**
      * Starts database connection
      *
-     * @param array $database
+     * @param string $DATABASE, A database other than the one defined in DATABASE ['name'] is optionally passed to connect
      *
-     * @return connection instance
+     * @return void
      */
-    public function __construct(array $database = [])
+    public function __construct(string $DATABASE = DATABASE['name'], string $MOTOR = DATABASE['motor'])
     {
         try {
-            $motor = ucwords($database['motor']) ?? "";
-            $className = $motor . 'Connection';
-            if (class_exists($className)) {
-                new $className($database);
-            } else {
-                throw new \RuntimeException("Unidentified connection engine.");
+            switch ($MOTOR) {
+              case 'sqlite':
+                parent::__construct('sqlite:'.$DATABASE);
+              break;
+              case 'cubrid':
+                parent::__construct('cubrid:host='.DATABASE['host'].';dbname='.$DATABASE.';port='.DATABASE['port'], DATABASE['user'], DATABASE['pass'], array(
+                \PDO::ATTR_EMULATE_PREPARES => false,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+              break;
+              case 'firebird':
+                parent::__construct('firebird:dbname='.DATABASE['host'].':'.$DATABASE, DATABASE['user'], DATABASE['pass'], array(
+                \PDO::ATTR_EMULATE_PREPARES => false,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+              break;
+              case 'odbc':
+                parent::__construct('odbc:'.$DATABASE, DATABASE['user'], DATABASE['pass']);
+              break;
+              case 'oracle':
+                parent::__construct(
+                    'oci:dbname=(DESCRIPTION =
+                  (ADDRESS_LIST =
+                    (ADDRESS = (PROTOCOL = '.DATABASE['protocol'].')(HOST = '.$MOTOR.')(PORT = '.DATABASE['port'].'))
+                  )
+                  (CONNECT_DATA =
+                    (SERVICE_NAME = '.$DATABASE.')
+                  )
+                );charset=utf8',
+                    ['user'],
+                    ['pass'],
+                [
+                  \PDO::ATTR_EMULATE_PREPARES => false,
+                  \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                  \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
+                ]);
+              break;
+              case 'postgresql':
+                parent::__construct('pgsql:host='.DATABASE['host'].';dbname='.$DATABASE.';charset=utf8', DATABASE['user'], DATABASE['pass'], [
+                  \PDO::ATTR_EMULATE_PREPARES => false,
+                  \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+                ]);
+              break;
+              case 'mysql':
+                parent::__construct('mysql:host='.DATABASE['host'].';dbname='.$DATABASE, DATABASE['user'], DATABASE['pass'], [
+                  \PDO::ATTR_EMULATE_PREPARES => false,
+                  \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                  \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+                ]);
+              break;
+              default:
+                if (IS_API) {
+                    die(json_encode([
+                      'success' => 0,
+                      'message' => 'Unidentified connection engine.'
+                    ]));
+                } else {
+                    die('Unidentified connection engine.');
+                }
+              break;
             }
         } catch (\PDOException $e) {
-            throw new \RuntimeException('Problem connecting to the database: ' . $e->getMessage());
+            if (IS_API) {
+                die(json_encode([
+                  'success' => 0,
+                  'message' => 'Error attempting to connect to database.'
+                ]));
+            } else {
+                die('Error attempting to connect to database.');
+            }
+        } finally {
+            unset($DATABASE, $MOTOR);
         }
     }
+
+    public function lastInsertId()
+    {
+        return parent::lastInsertId() ?? $this->id;
+    }
+
 
     /**
      * Returns an associative array of all the results thrown by a query
@@ -115,11 +184,18 @@ class StdConnection extends \PDO
     public function query(string $q): \PDOStatement
     {
         try {
-            $_SESSION['___QUERY_DEBUG___'][] = (string) $q;
+            if (DEBUG) {
+                $_SESSION['___QUERY_DEBUG___'][] = (string) $q;
+            }
 
             return parent::query($q);
-        } catch (\Exception $e) {
-            $message = 'Error in query: <b>' . $q . '<b/><br /><br />' . $e->getMessage();
+        } catch (Exception $e) {
+            if (defined(GENERATOR)) {
+                $message = "\nError in query:\n $q \n\n" . $e->getMessage();
+            } else {
+                $message = 'Error in query: <b>' . $q . '<b/><br /><br />' . $e->getMessage();
+            }
+            die(IS_API ? json_encode(array('success' => 0, 'message' => $message)): $message);
         }
     }
 
@@ -149,7 +225,7 @@ class StdConnection extends \PDO
     public function insert(string $table, array $e): \PDOStatement
     {
         if (sizeof($e) == 0) {
-            trigger_error('array passed in Connection::insert(...) is empty.', E_ERROR);
+            trigger_error('array passed in $this->db->insert(...) is empty.', E_ERROR);
         }
 
         $query = "INSERT INTO $table (";
@@ -220,6 +296,6 @@ class StdConnection extends \PDO
      */
     public function __clone()
     {
-        trigger_error('You are trying to clone the Connection', E_ERROR);
+        trigger_error('Estás intentando clonar la Conexión', E_ERROR);
     }
 }
