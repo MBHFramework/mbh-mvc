@@ -216,10 +216,11 @@ class StdConnection extends \PDO
     /**
      * Alert to avoid cloning
      *
+     * @throws \RuntimeException
      * @return void
      */
     public function __clone()
     {
-        trigger_error('You are trying to clone the Connection', E_ERROR);
+        throw new \RuntimeException('You are trying to clone the Connection', E_ERROR);
     }
 }
