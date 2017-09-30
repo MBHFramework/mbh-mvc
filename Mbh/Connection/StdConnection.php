@@ -45,7 +45,7 @@ class StdConnection extends \PDO
             $driver = isset($database['driver']) ? ucwords($database['driver']) : "";
             $className = __NAMESPACE__ . "\\Engines\\" . $driver;
             if (class_exists($className)) {
-                new $className($database);
+                return new $className($database);
             } else {
                 throw new \RuntimeException("Unidentified connection engine $className.");
             }
