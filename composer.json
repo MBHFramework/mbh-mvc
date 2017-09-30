@@ -19,7 +19,7 @@
     "description": "Minimalist framework to create MVC Apps with php7.",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/MBHFramework/mbh-mvc.git"
+        "url": "https://github.com/MBHFramework/mbh-mvc.git"
     },
     "autoload": {
       "psr-4": {
