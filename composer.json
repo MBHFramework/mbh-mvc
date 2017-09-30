@@ -1,6 +1,7 @@
 {
     "name": "mbh-framework/mvc",
     "license": "MIT",
+    "type": "library",
     "authors": [
         {
             "name": "Ulises Jeremias Cornejo Fandos",
