@@ -19,13 +19,17 @@ use Mbh\Interfaces\ModelInterface;
 class Model extends ModelInterface
 {
     protected $db = null;
+
     protected $table = [];
+
     protected $columnData = [];
 
-    function __construct()
+    function __construct($settings)
     {
-        $db = Connection::start();
+        $db = Connection::create($settings);
     }
+
+    
 
     function __destruct()
     {
