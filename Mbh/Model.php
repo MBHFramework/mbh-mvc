@@ -24,14 +24,54 @@ class Model extends ModelInterface
 
     protected $columnData = [];
 
-    function __construct($settings)
+    public function __construct($settings)
     {
         $db = Connection::create($settings);
     }
 
-    
+    /**
+     * Insert a series of elements into a table in the database
+     *
+     * @param array $e: Associative arrangement of elements, with the 'field_en_la_tabla' => 'value_to_insertar_en_ese_campo',
+     *                  all elements of the array $ e, will be healed by the method without having to do it manually when creating the array...
+     *
+     * @return object \PDOStatement
+     */
+    public function insert($e)
+    {
+        return $this->db->insert($table['name'], $e);
+    }
 
-    function __destruct()
+    /**
+     * Updates elements of a table in the database according to a condition
+     *
+     * @param array $e: Arreglo asociativo de elementos, con la estrctura 'campo_en_la_tabla' => 'valor_a_insertar_en_ese_campo',
+     *                  todos los elementos del arreglo $e, serán sanados por el método sin necesidad de hacerlo manualmente al crear el arreglo
+     * @param string $where: Condition indicating who will be modified
+     * @param string $limite: Limit modified elements, by default modifies them all
+     *
+     * @return object \PDOStatement
+     */
+    protected function update($e, $where, $limit)
+    {
+        return $this->db->update($table['name'], $e, $where, $limit);
+    }
+
+    /**
+     * Selects and lists in an associative / numeric array the results of a search in the database
+     *
+     * @param string $e: Elements to Select Comma Separated
+     * @param string $where: Condition that indicates who are the ones that are extracted, if not placed extracts all
+     * @param string $limite: Limit of items to bring, by default brings ALL those that match $where
+     *
+     * @return False if you do not find any results, array associative / numeric if you get at least one
+     */
+    protected function select($e, $where, $limit)
+    {
+        return $this->db->select($e, $table['name'], $where, $limit);
+    }
+
+    public function __destruct()
     {
         $db = $table = $columnData = null;
     }
