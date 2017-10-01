@@ -41,15 +41,15 @@ class StdConnection extends \PDO
      *
      * @return connection instance
      */
-    public function __construct(array $database = [])
+    public static function create($database = [])
     {
         try {
-            $motor = ucwords($database['motor']) ?? "";
-            $className = $motor . 'Connection';
+            $driver = isset($database['driver']) ? ucwords($database['driver']) : "";
+            $className = __NAMESPACE__ . "\\Engines\\" . $driver;
             if (class_exists($className)) {
-                new $className($database);
+                return new $className($database);
             } else {
-                throw new \RuntimeException("Unidentified connection engine.");
+                throw new \RuntimeException("Unidentified connection engine $className.");
             }
         } catch (\PDOException $e) {
             throw new \RuntimeException('Problem connecting to the database: ' . $e->getMessage());
