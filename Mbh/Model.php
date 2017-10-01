@@ -37,7 +37,7 @@ class Model extends ModelInterface
      *
      * @return object \PDOStatement
      */
-    public function insert($e)
+    protected function insert($e)
     {
         return $this->db->insert($table['name'], $e);
     }
@@ -52,7 +52,7 @@ class Model extends ModelInterface
      *
      * @return object \PDOStatement
      */
-    protected function update($e, $where, $limit)
+    protected function update($e, $where = "1 = 1", $limit = "")
     {
         return $this->db->update($table['name'], $e, $where, $limit);
     }
@@ -66,7 +66,7 @@ class Model extends ModelInterface
      *
      * @return False if you do not find any results, array associative / numeric if you get at least one
      */
-    protected function select($e, $where, $limit)
+    protected function select($e, $where = "1 = 1", $limit = "")
     {
         return $this->db->select($e, $table['name'], $where, $limit);
     }
