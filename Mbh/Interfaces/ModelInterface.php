@@ -15,9 +15,7 @@ namespace Mbh\Interfaces;
  */
 interface ModelInterface
 {
-    public function new();
-
-    public function create();
+    /* public function create();
 
     public function save();
 
@@ -25,5 +23,5 @@ interface ModelInterface
 
     public function delete();
 
-    public function get();
+    public function get(); */
 }
