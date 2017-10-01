@@ -1,24 +1,28 @@
 {
     "name": "mbh-framework/mvc",
     "license": "MIT",
+    "type": "library",
     "authors": [
         {
             "name": "Ulises Jeremias Cornejo Fandos",
             "email": "ulisescf.24@gmail.com"
+        },
+        {
+            "name": "Juan Cruz Ocampos",
+            "email": "ocamposjuancruz23@gmail.com"
+        },
+        {
+            "name": "Lucas Di Cunzolo",
+            "email": "ldicunzolo@cespi.unlp.edu.ar"
         }
     ],
     "description": "Minimalist framework to create MVC Apps with php7.",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/MBHFramework/mbh-mvc.git"
-    },
     "autoload": {
       "psr-4": {
         "Mbh\\": "Mbh"
       }
     },
     "require": {
-        "php": "^7.0",
-        "mbh-framework/firewall": "1.x-dev"
+        "php": "^5.6 || ^7.0"
     }
 }

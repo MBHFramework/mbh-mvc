@@ -18,7 +18,9 @@ use Mbh\Interfaces\ControllerInterface;
 class Controller extends ControllerInterface
 {
     protected $models = [];
+
     protected $template;
+
     protected $app;
 
     function __construct($app = null)
