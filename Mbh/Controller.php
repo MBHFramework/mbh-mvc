@@ -13,6 +13,7 @@ namespace Mbh;
 use Mbh\Interfaces\ControllerInterface;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
+use Mbh\Helpers\Inflect;
 
 /**
  * created by Lucas Di Cunzolo
@@ -29,5 +30,5 @@ class Controller extends ControllerInterface
     {
       $this->app = $app;
       $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
-  }
+    }
 }
