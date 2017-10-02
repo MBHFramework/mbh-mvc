@@ -37,13 +37,12 @@ class Controller
         $this->app = $app;
     }
 
-    public static function create()
+    public static function create($controller, $args)
     {
-        $controllerName = ucwords($controller) . "Controller";
-        if(class_exists($controller_name)) {
-            return new $controller(...func_get_args());
-        } else {
+        if(!class_exists($controller)) {
             throw new \RuntimeException;
         }
+
+        return new $controller(...$args);
     }
 }
