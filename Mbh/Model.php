@@ -35,14 +35,18 @@ class Model implements ModelInterface
           return static::$db;
     }
 
-    public function __construct($state = [])
+    public function __construct($state = [], $default = null)
     {
-        $this->state = $state;
+        foreach (static::$columnData as $key => $value) {
+            $this->state[$key] = $default;
+        }
+
+        $this->setState($state);
     }
 
     /**
-     * Calling a non-existant method on App checks to see if there's an item
-     * in the container that is callable and if so, calls it.
+     * Calling a non-existant method on Model checks to see if there's an item
+     * in the state.
      *
      * @param  string $method
      * @param  array $args
@@ -56,7 +60,50 @@ class Model implements ModelInterface
             throw new \BadMethodCallException("Method $method is not a valid method");
         }
 
-        return $this->state[$method];
+        return $this->getStateAttr($method, ...$args);
+    }
+
+    /**
+     * Does app have a setting with given key?
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasStateAttr($key)
+    {
+        return isset($this->state[$key]);
+    }
+
+    /**
+     * Get model state
+     *
+     * @return array
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Get model state attr with given key
+     *
+     * @param string $key
+     * @param mixed $defaultValue
+     * @return mixed
+     */
+    public function getStateAttr($key, $defaultValue = null)
+    {
+        return $this->hasState($key) ? $this->state[$key] : $defaultValue;
+    }
+
+    /**
+     * Merge a key-value array with existing app settings
+     *
+     * @param array $state
+     */
+    public function addState($state)
+    {
+        $this->state = array_merge($this->state, $state);
     }
 
     public function exists()
