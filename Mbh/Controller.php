@@ -38,4 +38,14 @@ class Controller
         $this->app = $app;
         $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
     }
+
+    public static function create()
+    {
+        $controllerName = ucwords($controller) . "Controller";
+        if(class_exists($controller_name) {
+            return new $controller(...func_get_args());
+        } else {
+            throw new \RuntimeException;
+        }
+    }
 }
