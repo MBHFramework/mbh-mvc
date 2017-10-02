@@ -11,13 +11,15 @@
 namespace Mbh;
 
 use Mbh\Interfaces\ControllerInterface;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
 
 /**
  * created by Lucas Di Cunzolo
  */
 class Controller extends ControllerInterface
 {
-    protected $models = [];
+    protected $model;
 
     protected $template;
 
@@ -25,5 +27,7 @@ class Controller extends ControllerInterface
 
     function __construct($app = null)
     {
-    }
+      $this->app = $app;
+      $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
+  }
 }
