@@ -139,6 +139,19 @@ class Model implements ModelInterface
         return $model->save();
     }
 
+    public static function find($id)
+    {
+        $column = self::$columnData[self::$table['idColumn']]
+        return static::findBy($id, $column);
+    }
+
+    public static function findBy($value, $column)
+    {
+        return static::get([
+          $column => $value
+        ]);
+    }
+
     public static function get($criteria = [])
     {
         $className = get_called_class();
@@ -188,6 +201,21 @@ class Model implements ModelInterface
             );
         } else {
             $this->save();
+        }
+
+        return $this;
+    }
+
+    public function remove()
+    {
+        if ($this->exists()) {
+            $matches = $this->matches();
+            $idColumn = self::$table['idColumn'];
+
+            static::delete(
+              "$idColumn=" . $matches[$idColumn],
+              1
+            );
         }
 
         return $this;

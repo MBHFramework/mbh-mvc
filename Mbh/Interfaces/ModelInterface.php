@@ -17,12 +17,12 @@ interface ModelInterface
 {
     public static function create($data = []);
 
-    public static function find();
+    public static function find($id);
 
-    public static function findBy();
+    public static function findBy($value, $column);
 
     public static function get($criteria = []);
-    
+
     public static function all();
 
     public function save();
