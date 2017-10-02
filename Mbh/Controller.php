@@ -10,8 +10,6 @@
 
 namespace Mbh;
 
-use Twig_Environment;
-use Twig_Loader_Filesystem;
 use Mbh\Helpers\Inflect;
 use Mbh\Interfaces\ControllerInterface;
 
@@ -20,7 +18,7 @@ use Mbh\Interfaces\ControllerInterface;
  */
 class Controller
 {
-    protected static $model;
+    protected $model;
 
     protected $template;
 
@@ -35,8 +33,8 @@ class Controller
                      ));
 
         $this->model = !class_exists($modelName) ?: $modelName;
+
         $this->app = $app;
-        $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
     }
 
     public static function create()
