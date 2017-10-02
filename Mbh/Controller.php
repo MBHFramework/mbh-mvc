@@ -10,17 +10,17 @@
 
 namespace Mbh;
 
-use Mbh\Interfaces\ControllerInterface;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Mbh\Helpers\Inflect;
+use Mbh\Interfaces\ControllerInterface;
 
 /**
  * created by Lucas Di Cunzolo
  */
-class Controller extends ControllerInterface
+class Controller
 {
-    protected $model;
+    protected static $model;
 
     protected $template;
 
@@ -28,7 +28,24 @@ class Controller extends ControllerInterface
 
     function __construct($app = null)
     {
-      $this->app = $app;
-      $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
+        $className = explode('\\', get_called_class());
+
+        $modelName = ucwords(Inflect::pluralize(
+                       str_replace("Controller", "", $className[count($className)-1])
+                     ));
+
+        $this->model = !class_exists($modelName) ?: $modelName;
+        $this->app = $app;
+        $this->template = new Twig_Environment(new Twig_Loader_Filesystem('./web/templates/')); 
+    }
+
+    public static function create()
+    {
+        $controllerName = ucwords($controller) . "Controller";
+        if(class_exists($controller_name) {
+            return new $controller(...func_get_args());
+        } else {
+            throw new \RuntimeException;
+        }
     }
 }
