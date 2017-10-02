@@ -15,13 +15,19 @@ namespace Mbh\Interfaces;
  */
 interface ModelInterface
 {
-    /* public function create();
+    public static function create($data = []);
+
+    public static function find();
+
+    public static function findBy();
+
+    public static function all();
+
+    public static function get($criteria);
 
     public function save();
 
-    public function update();
+    public function edit();
 
-    public function delete();
-
-    public function get(); */
+    public function remove();
 }
