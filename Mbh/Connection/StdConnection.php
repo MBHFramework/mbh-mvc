@@ -153,7 +153,7 @@ class StdConnection extends \PDO
         $query[strlen($query) - 1] = ')';
         $values[strlen($values) - 1] = ')';
         $query .= ' VALUES (' . $values . ';';
-        self::$id = parent::lastInsertId($table);
+
         return $this->query($query);
     }
 
@@ -197,7 +197,7 @@ class StdConnection extends \PDO
         $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
         $result = $sql->fetchAll();
         $sql->closeCursor();
-        return $sql;
+        return $result;
     }
 
     /**

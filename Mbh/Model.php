@@ -18,7 +18,7 @@ use Mbh\Interfaces\ModelInterface;
  */
 class Model implements ModelInterface
 {
-    protected $db = null;
+    protected static $db = null;
 
     protected static $table = [];
 
@@ -26,13 +26,13 @@ class Model implements ModelInterface
 
     protected $state = [];
 
-    public static init($settings = [], $new_instance = true)
+    public static function init($settings = [], $new_instance = true)
     {
-          if (!self::$db instanceof Connection or $new_instance) {
-              self::$db = Connection::create($settings);
+          if (!static::$db instanceof Connection or $new_instance) {
+              static::$db = Connection::create($settings);
           }
 
-          return self::$db;
+          return static::$db;
     }
 
     public function __construct($state = [])
@@ -59,15 +59,20 @@ class Model implements ModelInterface
         return $this->state[$method];
     }
 
-    protected static function matches()
+    public function exists()
+    {
+        return count(static::get($this->state)) > 0;
+    }
+
+    protected function matches()
     {
         $matches = [];
 
         foreach ($this->state as $key => $value) {
-            if (!isset(self::$columnData[$key])) {
-                throw new \RuntimeException("Key $key does not match with any column of " . self::$table['name'] . " table");
+            if (!isset(static::$columnData[$key])) {
+                throw new \RuntimeException("Key $key does not match with any column of " . static::$table['name'] . " table");
             }
-            $matches[self::$columnData[$key]] = $value;
+            $matches[static::$columnData[$key]] = $value;
         }
 
         return $matches;
@@ -83,11 +88,11 @@ class Model implements ModelInterface
      */
     protected static function insert($e)
     {
-        if (!self::$db) {
+        if (!static::$db) {
             static::init();
         }
 
-        return self::$db->insert(self::$table['name'], $e);
+        return static::$db->insert(static::$table['name'], $e);
     }
 
     /**
@@ -102,11 +107,11 @@ class Model implements ModelInterface
      */
     protected static function update($e, $where = "1 = 1", $limit = "")
     {
-        if (!self::$db) {
+        if (!static::$db) {
             static::init();
         }
 
-        return self::$db->update(self::$table['name'], $e, $where, $limit);
+        return static::$db->update(static::$table['name'], $e, $where, $limit);
     }
 
     /**
@@ -120,11 +125,11 @@ class Model implements ModelInterface
      */
     protected static function select($e = "*", $where = "1 = 1", $limit = "")
     {
-        if (!self::$db) {
+        if (!static::$db) {
             static::init();
         }
 
-        return self::$db->select($e, self::$table['name'], $where, $limit);
+        return static::$db->select($e, static::$table['name'], $where, $limit);
     }
 
     public static function create($data = [])
@@ -141,7 +146,7 @@ class Model implements ModelInterface
 
     public static function find($id)
     {
-        $column = self::$columnData[self::$table['idColumn']]
+        $column = static::$columnData[static::$table['idColumn']];
         return static::findBy($id, $column);
     }
 
@@ -157,7 +162,7 @@ class Model implements ModelInterface
         $className = get_called_class();
         $models = [];
 
-        $where = "1 = 1";
+        $where = "1=1";
         foreach ($criteria as $key => $value) {
             if (isset($columnData[$key])) {
                 $where .= " AND " . $columnData[$key] . "=$value";
@@ -165,8 +170,10 @@ class Model implements ModelInterface
         }
 
         $result = static::select("*", $where);
+
         foreach ($result as $row => $content) {
             $data = [];
+
             foreach ($content as $key => $value) {
                 $data[$columnData[$key]] = $value;
             }
@@ -174,7 +181,7 @@ class Model implements ModelInterface
             $models[] = new $className($data);
         }
 
-        return $modelds;
+        return $models;
     }
 
     public static function all()
@@ -185,6 +192,9 @@ class Model implements ModelInterface
     public function save()
     {
         static::insert($this->matches());
+        $id = static::$table['idColumn'];
+        $this->state[$id] = static::$db->lastInsertId();
+
         return $this;
     }
 
@@ -192,7 +202,7 @@ class Model implements ModelInterface
     {
         if ($this->exists()) {
             $matches = $this->matches();
-            $idColumn = self::$table['idColumn'];
+            $idColumn = static::$table['idColumn'];
 
             static::update(
               $matches,
@@ -210,7 +220,7 @@ class Model implements ModelInterface
     {
         if ($this->exists()) {
             $matches = $this->matches();
-            $idColumn = self::$table['idColumn'];
+            $idColumn = static::$table['idColumn'];
 
             static::delete(
               "$idColumn=" . $matches[$idColumn],
