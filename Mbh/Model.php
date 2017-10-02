@@ -14,7 +14,7 @@ use Mbh\Connection\StdConnection as Connection;
 use Mbh\Interfaces\ModelInterface;
 
 /**
- * created by Lucas Di Cunzolo
+ * created by Ulises Jeremias Cornejo Fandos
  */
 class Model implements ModelInterface
 {
