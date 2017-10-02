@@ -24,13 +24,39 @@ class Model implements ModelInterface
 
     protected static $columnData = [];
 
-    protected static $idColumn;
-
     protected $state = [];
+
+    public static init($settings = [], $new_instance = true)
+    {
+          if (!self::$db instanceof Connection or $new_instance) {
+              self::$db = Connection::create($settings);
+          }
+
+          return self::$db;
+    }
 
     public function __construct($state = [])
     {
         $this->state = $state;
+    }
+
+    /**
+     * Calling a non-existant method on App checks to see if there's an item
+     * in the container that is callable and if so, calls it.
+     *
+     * @param  string $method
+     * @param  array $args
+     * @return mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $args)
+    {
+        if (!isset($this->state[$method])) {
+            throw new \BadMethodCallException("Method $method is not a valid method");
+        }
+
+        return $this->state[$method];
     }
 
     protected static function matches()
@@ -38,10 +64,10 @@ class Model implements ModelInterface
         $matches = [];
 
         foreach ($this->state as $key => $value) {
-            if (!isset($this->columnData[$key])) {
-                throw new \RuntimeException("Key $key does not match with any column of " . static::$table['name'] . " table");
+            if (!isset(self::$columnData[$key])) {
+                throw new \RuntimeException("Key $key does not match with any column of " . self::$table['name'] . " table");
             }
-            $matches[$this->columnData[$key]] = $value;
+            $matches[self::$columnData[$key]] = $value;
         }
 
         return $matches;
@@ -57,7 +83,11 @@ class Model implements ModelInterface
      */
     protected static function insert($e)
     {
-        return $this->db->insert(static::$table['name'], $e);
+        if (!self::$db) {
+            static::init();
+        }
+
+        return self::$db->insert(self::$table['name'], $e);
     }
 
     /**
@@ -72,7 +102,11 @@ class Model implements ModelInterface
      */
     protected static function update($e, $where = "1 = 1", $limit = "")
     {
-        return $this->db->update(static::$table['name'], $e, $where, $limit);
+        if (!self::$db) {
+            static::init();
+        }
+
+        return self::$db->update(self::$table['name'], $e, $where, $limit);
     }
 
     /**
@@ -86,7 +120,11 @@ class Model implements ModelInterface
      */
     protected static function select($e = "*", $where = "1 = 1", $limit = "")
     {
-        return $this->db->select($e, static::$table['name'], $where, $limit);
+        if (!self::$db) {
+            static::init();
+        }
+
+        return self::$db->select($e, self::$table['name'], $where, $limit);
     }
 
     public static function create($data = [])
@@ -101,13 +139,26 @@ class Model implements ModelInterface
         return $model->save();
     }
 
-    public static function get($criteria)
+    public static function get($criteria = [])
     {
         $className = get_called_class();
         $models = [];
-        $result = static::select();
-        foreach ($result as $key => $value) {
-            $models[] = new $className($value);
+
+        $where = "1 = 1";
+        foreach ($criteria as $key => $value) {
+            if (isset($columnData[$key])) {
+                $where .= " AND " . $columnData[$key] . "=$value";
+            }
+        }
+
+        $result = static::select("*", $where);
+        foreach ($result as $row => $content) {
+            $data = [];
+            foreach ($content as $key => $value) {
+                $data[$columnData[$key]] = $value;
+            }
+
+            $models[] = new $className($data);
         }
 
         return $modelds;
@@ -128,8 +179,13 @@ class Model implements ModelInterface
     {
         if ($this->exists()) {
             $matches = $this->matches();
-            $idColumn = $this->idColumn;
-            static::update($matches, "$idColumn=" . $matches[$idColumn], 1);
+            $idColumn = self::$table['idColumn'];
+
+            static::update(
+              $matches,
+              "$idColumn=" . $matches[$idColumn],
+              1
+            );
         } else {
             $this->save();
         }

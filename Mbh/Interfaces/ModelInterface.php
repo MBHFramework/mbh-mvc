@@ -21,9 +21,9 @@ interface ModelInterface
 
     public static function findBy();
 
+    public static function get($criteria = []);
+    
     public static function all();
-
-    public static function get($criteria);
 
     public function save();
 
