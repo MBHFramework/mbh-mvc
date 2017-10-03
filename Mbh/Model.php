@@ -133,7 +133,7 @@ class Model implements ModelInterface
      *
      * @return object \PDOStatement
      */
-    protected static function insert($e)
+    static function insert($e)
     {
         if (!static::$db) {
             static::init();
@@ -152,7 +152,7 @@ class Model implements ModelInterface
      *
      * @return object \PDOStatement
      */
-    protected static function update($e, $where = "1 = 1", $limit = "")
+    static function update($e, $where = "1 = 1", $limit = "")
     {
         if (!static::$db) {
             static::init();
@@ -170,7 +170,7 @@ class Model implements ModelInterface
      *
      * @return False if you do not find any results, array associative / numeric if you get at least one
      */
-    protected static function select($e = "*", $where = "1 = 1", $limit = "")
+    static function select($e = "*", $where = "1 = 1", $limit = "")
     {
         if (!static::$db) {
             static::init();
