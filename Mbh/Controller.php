@@ -24,6 +24,15 @@ class Controller
 
     protected $app;
 
+    public static function create($controller, $args)
+    {
+        if(!class_exists($controller)) {
+            throw new \RuntimeException;
+        }
+
+        return new $controller(...$args);
+    }
+
     function __construct($app = null)
     {
         $className = explode('\\', get_called_class());
@@ -35,14 +44,5 @@ class Controller
         $this->model = !class_exists($modelName) ?: $modelName;
 
         $this->app = $app;
-    }
-
-    public static function create($controller, $args)
-    {
-        if(!class_exists($controller)) {
-            throw new \RuntimeException;
-        }
-
-        return new $controller(...$args);
     }
 }
