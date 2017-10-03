@@ -41,7 +41,7 @@ class Model implements ModelInterface
             $this->state[$key] = $default;
         }
 
-        $this->setState($state);
+        $this->addState($state);
     }
 
     /**
