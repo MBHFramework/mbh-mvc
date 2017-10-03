@@ -56,7 +56,7 @@ class Model implements ModelInterface
      */
     public function __call($method, $args)
     {
-        if (!$this->hasStateAttr($method)) {
+        if (!array_key_exists($method, $this->state)) {
             throw new \BadMethodCallException("Method $method is not a valid method");
         }
 
@@ -222,7 +222,8 @@ class Model implements ModelInterface
             $data = [];
 
             foreach ($content as $key => $value) {
-                $data[$columnData[$key]] = $value;
+                $hash_key = array_search($key, static::$columnData);
+                $data[$hash_key] = $value;
             }
 
             $models[] = new $className($data);
