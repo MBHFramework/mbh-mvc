@@ -56,7 +56,7 @@ class Model implements ModelInterface
      */
     public function __call($method, $args)
     {
-        if (!isset($this->state[$method])) {
+        if (!$this->hasStateAttr($method)) {
             throw new \BadMethodCallException("Method $method is not a valid method");
         }
 
@@ -93,7 +93,7 @@ class Model implements ModelInterface
      */
     public function getStateAttr($key, $defaultValue = null)
     {
-        return $this->hasState($key) ? $this->state[$key] : $defaultValue;
+        return $this->hasStateAttr($key) ? $this->state[$key] : $defaultValue;
     }
 
     /**
@@ -194,7 +194,7 @@ class Model implements ModelInterface
     public static function find($id)
     {
         $column = static::$columnData[static::$table['idColumn']];
-        return static::findBy($id, $column);
+        return static::findBy($id, $column)[0];
     }
 
     public static function findBy($value, $column)
