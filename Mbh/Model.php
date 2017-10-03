@@ -184,9 +184,9 @@ class Model implements ModelInterface
         $className = get_called_class();
         $model = new $className($data);
 
-        if (!$model->isValid()) {
+        /* if (!$model->isValid()) {
             return;
-        }
+        } */
 
         return $model->save();
     }
@@ -241,7 +241,8 @@ class Model implements ModelInterface
     {
         static::insert($this->matches());
         $id = static::$table['idColumn'];
-        $this->state[$id] = static::$db->lastInsertId();
+        $hash_key = array_search($id, static::$columnData);
+        $this->state[$hash_key] = static::$db->lastInsertId();
 
         return $this;
     }
