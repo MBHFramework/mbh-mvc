@@ -179,6 +179,7 @@ class StdConnection extends \PDO
         }
         $query[strlen($query) - 1] = ' ';
         $query .= "WHERE $where $limit;";
+
         return $this->query($query);
     }
 
@@ -194,9 +195,10 @@ class StdConnection extends \PDO
      */
     public function select($e, $table, $where = '1 = 1', $limit = "")
     {
-        $sql = $this->query("SELECT $e FROM $table WHERE $where LIMIT $limit;");
+        $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
         $result = $sql->fetchAll();
         $sql->closeCursor();
+
         return $result;
     }
 
