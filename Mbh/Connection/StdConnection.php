@@ -194,7 +194,7 @@ class StdConnection extends \PDO
      */
     public function select($e, $table, $where = '1 = 1', $limit = "")
     {
-        $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
+        $sql = $this->query("SELECT $e FROM $table WHERE $where LIMIT $limit;");
         $result = $sql->fetchAll();
         $sql->closeCursor();
         return $result;
