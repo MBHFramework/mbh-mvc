@@ -26,10 +26,10 @@ class StdConnection extends \PDO
      */
     public static function start($database = [], $new_instance = false)
     {
-        if (!self::$instance instanceof self or $new_instance) {
-            self::$instance = new self($database);
+        if (!static::$instance instanceof static or $new_instance) {
+            static::$instance = new static($database);
         }
-        return self::$instance;
+        return static::$instance;
     }
 
     /**

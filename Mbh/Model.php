@@ -112,9 +112,9 @@ class Model implements ModelInterface
               return false;
         }
 
-        return $this->refresh();
+        $this->refresh();
 
-
+        return true;
     }
 
     protected function matches()
@@ -214,7 +214,7 @@ class Model implements ModelInterface
     {
         $className = get_called_class();
         $models = [];
-
+        
         $where = "1=1";
         foreach ($criteria as $key => $value) {
             if (isset($columnData[$key])) {
