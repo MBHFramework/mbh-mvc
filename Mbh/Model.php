@@ -108,7 +108,13 @@ class Model implements ModelInterface
 
     public function exists()
     {
-        return count(static::get($this->state)) > 0;
+        if (count(static::get($this->state)) == 0) {
+              return false;
+        }
+
+        return $this->refresh();
+
+
     }
 
     protected function matches()
