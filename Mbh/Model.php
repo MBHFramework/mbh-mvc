@@ -265,6 +265,17 @@ class Model implements ModelInterface
         return $this;
     }
 
+    public function refresh()
+    {
+        $users = static::get($this->state);
+
+        if (count($users) > 0) {
+              $this->state = $users[0]->state;
+        }
+
+        return $this;
+    }
+
     public function remove()
     {
         if ($this->exists()) {
@@ -273,7 +284,7 @@ class Model implements ModelInterface
 
             static::delete(
               "$idColumn=" . $matches[$idColumn],
-              1
+              "LIMIT 1"
             );
         }
 
@@ -282,6 +293,6 @@ class Model implements ModelInterface
 
     public function __destruct()
     {
-        $db = $table = $columnData = null;
+        static::$db = static::$table = static::$columnData = null;
     }
 }
