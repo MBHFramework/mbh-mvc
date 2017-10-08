@@ -28,11 +28,11 @@ class Model implements ModelInterface
 
     public static function init($settings = [], $new_instance = true)
     {
-          if (!static::$db instanceof Connection or $new_instance) {
-              static::$db = Connection::create($settings);
-          }
+        if (!static::$db instanceof Connection or $new_instance) {
+            static::$db = Connection::create($settings);
+        }
 
-          return static::$db;
+        return static::$db;
     }
 
     public function __construct($state = [], $default = null)
@@ -108,11 +108,9 @@ class Model implements ModelInterface
 
     public function exists()
     {
-        if (count(static::get($this->state)) == 0) {
-              return false;
+        if (!static::get($this->state)) {
+            return false;
         }
-
-        $this->refresh();
 
         return true;
     }
@@ -139,10 +137,10 @@ class Model implements ModelInterface
      *
      * @return object \PDOStatement
      */
-    static function insert($e)
+    public static function insert($e)
     {
         if (!static::$db) {
-            static::init();
+              static::init();
         }
 
         return static::$db->insert(static::$table['name'], $e);
@@ -158,10 +156,10 @@ class Model implements ModelInterface
      *
      * @return object \PDOStatement
      */
-    static function update($e, $where = "1 = 1", $limit = "")
+    public static function update($e, $where = "1=1", $limit = "")
     {
         if (!static::$db) {
-            static::init();
+              static::init();
         }
 
         return static::$db->update(static::$table['name'], $e, $where, $limit);
@@ -176,10 +174,10 @@ class Model implements ModelInterface
      *
      * @return False if you do not find any results, array associative / numeric if you get at least one
      */
-    static function select($e = "*", $where = "1 = 1", $limit = "")
+    public static function select($e = "*", $where = "1=1", $limit = "")
     {
         if (!static::$db) {
-            static::init();
+              static::init();
         }
 
         return static::$db->select($e, static::$table['name'], $where, $limit);
@@ -199,7 +197,7 @@ class Model implements ModelInterface
 
     public static function find($id)
     {
-        $column = static::$columnData[static::$table['idColumn']];
+        $column = array_search(static::$table['idColumn'], static::$columnData);
         return static::findBy($id, $column)[0];
     }
 
@@ -213,12 +211,11 @@ class Model implements ModelInterface
     public static function get($criteria = [])
     {
         $className = get_called_class();
-        $models = [];
-        
         $where = "1=1";
+
         foreach ($criteria as $key => $value) {
-            if (isset($columnData[$key])) {
-                $where .= " AND " . $columnData[$key] . "=$value";
+            if (isset(static::$columnData[$key]) and $value !== null) {
+                $where .= " AND " . static::$columnData[$key] . "='$value'";
             }
         }
 
@@ -245,10 +242,10 @@ class Model implements ModelInterface
 
     public function save()
     {
-        static::insert($this->matches());
+        static::insert(static::$table['name'], $this->matches());
         $id = static::$table['idColumn'];
         $hash_key = array_search($id, static::$columnData);
-        $this->state[$hash_key] = static::$db->lastInsertId();
+        $this->state[$hash_key] = static::lastInsertId();
 
         return $this;
     }
@@ -259,10 +256,11 @@ class Model implements ModelInterface
             $matches = $this->matches();
             $idColumn = static::$table['idColumn'];
 
-            static::update(
+            static::$db->update(
+              static::$table['name'],
               $matches,
               "$idColumn=" . $matches[$idColumn],
-              1
+              "LIMIT 1"
             );
         } else {
             $this->save();
@@ -276,7 +274,7 @@ class Model implements ModelInterface
         $users = static::get($this->state);
 
         if (count($users) > 0) {
-              $this->state = $users[0]->state;
+            $this->state = $users[0]->state;
         }
 
         return $this;
@@ -295,10 +293,5 @@ class Model implements ModelInterface
         }
 
         return $this;
-    }
-
-    public function __destruct()
-    {
-        static::$db = static::$table = static::$columnData = null;
     }
 }

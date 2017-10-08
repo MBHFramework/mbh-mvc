@@ -111,8 +111,9 @@ class StdConnection extends \PDO
         try {
             $_SESSION['___QUERY_DEBUG___'][] = (string) $q;
             return parent::query($q);
-        } catch (\Exception $e) {
-            $message = 'Error in query: <b>' . $q . '<b/><br /><br />' . $e->getMessage();
+        } catch (\PDOException $e) {
+            throw new \Exception('Error in query: <b>' . $q . '<b/><br /><br />' . $e->getMessage());
+
         }
     }
 
@@ -196,7 +197,7 @@ class StdConnection extends \PDO
     public function select($e, $table, $where = '1 = 1', $limit = "")
     {
         $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
-        $result = $sql->fetchAll();
+        $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
         $sql->closeCursor();
 
         return $result;
