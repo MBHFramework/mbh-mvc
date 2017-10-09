@@ -141,7 +141,7 @@ class Model implements ModelInterface
     public static function insert($e)
     {
         if (!static::$db) {
-              static::init();
+            static::init();
         }
 
         return static::$db->insert(static::$table['name'], $e);
@@ -158,7 +158,7 @@ class Model implements ModelInterface
     public function delete($where, $limit = 'LIMIT 1')
     {
         if (!static::$db) {
-              static::init();
+            static::init();
         }
 
         return static::$db->delete(static::$table['name'], $where, $limit);
@@ -177,7 +177,7 @@ class Model implements ModelInterface
     public static function update($e, $where = "1=1", $limit = "")
     {
         if (!static::$db) {
-              static::init();
+            static::init();
         }
 
         return static::$db->update(static::$table['name'], $e, $where, $limit);
@@ -195,7 +195,7 @@ class Model implements ModelInterface
     public static function select($e = "*", $where = "1=1", $limit = "")
     {
         if (!static::$db) {
-              static::init();
+            static::init();
         }
 
         return static::$db->select($e, static::$table['name'], $where, $limit);
@@ -271,19 +271,15 @@ class Model implements ModelInterface
 
     public function edit()
     {
-        if ($this->exists()) {
-            $matches = $this->matches();
-            $idColumn = static::$table['idColumn'];
+        $matches = $this->matches();
+        $idColumn = static::$table['idColumn'];
 
-            static::$db->update(
-              static::$table['name'],
-              $matches,
-              "$idColumn=" . $matches[$idColumn],
-              "LIMIT 1"
-            );
-        } else {
-            $this->save();
-        }
+        static::$db->update(
+          static::$table['name'],
+          $matches,
+          "$idColumn=" . $matches[$idColumn],
+          "LIMIT 1"
+        );
 
         return $this;
     }
