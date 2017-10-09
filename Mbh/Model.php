@@ -148,6 +148,23 @@ class Model implements ModelInterface
     }
 
     /**
+     * Clears a series of items securely from a table in the database
+     *
+     * @param string $where: Deletion condition that defines who are those elements
+     * @param string $limit: By default it is limited to deleting a single element that matches the $ where
+     *
+     * @return object \PDOStatement
+     */
+    public function delete($where, $limit = 'LIMIT 1')
+    {
+        if (!static::$db) {
+              static::init();
+        }
+
+        return static::$db->delete(static::$table['name'], $where, $limit);
+    }
+
+    /**
      * Updates elements of a table in the database according to a condition
      *
      * @param array $e: Arreglo asociativo de elementos, con la estrctura 'campo_en_la_tabla' => 'valor_a_insertar_en_ese_campo',
