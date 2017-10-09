@@ -122,8 +122,9 @@ class Model implements ModelInterface
         foreach ($this->state as $key => $value) {
             if (!isset(static::$columnData[$key])) {
                 throw new \RuntimeException("Key $key does not match with any column of " . static::$table['name'] . " table");
+            } elseif ($value != null) {
+                $matches[static::$columnData[$key]] = $value;
             }
-            $matches[static::$columnData[$key]] = $value;
         }
 
         return $matches;
