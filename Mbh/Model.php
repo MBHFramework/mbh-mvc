@@ -246,7 +246,8 @@ class Model implements ModelInterface
         static::insert($this->matches());
         $id = static::$table['idColumn'];
         $hash_key = array_search($id, static::$columnData);
-        $this->state[$hash_key] = static::lastInsertId();
+
+        $this->refresh();
 
         return $this;
     }
