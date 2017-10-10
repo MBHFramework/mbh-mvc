@@ -130,6 +130,19 @@ class Model implements ModelInterface
         return $matches;
     }
 
+    public function equals($model)
+    {
+        $id = static::$table['idColumn'];
+        $hash_key = array_search($id, static::$columnData);
+        $className = get_called_class();
+
+        if (!$model instanceof $className) {
+            return false;
+        }
+
+        return $this->getStateAttr($hash_key) === $model->getStateAttr($hash_key);
+    }
+
     /**
      * Insert a series of elements into a table in the database
      *
