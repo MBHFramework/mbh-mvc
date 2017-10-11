@@ -232,14 +232,14 @@ class Model implements ModelInterface
         return static::findBy($id, $column)[0];
     }
 
-    public static function findBy($value, $column)
+    public static function findBy($value, $column, $from = null, $delta = null)
     {
         return static::get([
           $column => $value
-        ]);
+        ], $from, $delta);
     }
 
-    public static function get($criteria = [])
+    public static function get($criteria = [], $from = null, $delta = null)
     {
         $className = get_called_class();
         $where = "1=1";
@@ -250,7 +250,11 @@ class Model implements ModelInterface
             }
         }
 
-        $result = static::select("*", $where);
+        if ($from) {
+            $limit = $delta ? "LIMIT $from, $delta" : "LIMIT $from";
+        }
+
+        $result = static::select("*", $where, $limit);
 
         foreach ($result as $row => $content) {
             $data = [];
