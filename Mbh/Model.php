@@ -254,8 +254,12 @@ class Model implements ModelInterface
             $limit = $delta ? "LIMIT $from, $delta" : "LIMIT $from";
         }
 
+        $limit = "";
+        
         $result = static::select("*", $where, $limit);
 
+        $models = [];
+        
         foreach ($result as $row => $content) {
             $data = [];
 
