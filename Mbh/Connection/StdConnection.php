@@ -11,7 +11,7 @@
 namespace Mbh\Connection;
 
 /**
- * created by Ulises Jeremias Cornejo Fandos
+ * @author Ulises Jeremias Cornejo Fandos
  */
 class StdConnection extends \PDO
 {
