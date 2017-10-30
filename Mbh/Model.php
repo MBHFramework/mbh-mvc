@@ -255,11 +255,11 @@ class Model implements ModelInterface
         }
 
         $limit = "";
-        
+
         $result = static::select("*", $where, $limit);
 
         $models = [];
-        
+
         foreach ($result as $row => $content) {
             $data = [];
 
@@ -329,5 +329,25 @@ class Model implements ModelInterface
         }
 
         return $this;
+    }
+
+    public static function updateWith($data)
+    {
+        $column = array_search(static::$table['idColumn'], static::$columnData);
+        $class = get_called_class();
+
+        foreach ($data as $key => $value) {
+            $new_data = new $class($value);
+            if (!$new_data->refresh()->getStateAttr($column)) {
+                $new_data->save();
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return json_encode($this->state);
     }
 }
